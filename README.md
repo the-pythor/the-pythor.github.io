@@ -1,6 +1,5 @@
 ### Hi there 👋
-### Preet
-Here are some ideas to get you started:
+### I'm Preet
 
 - 🔭 I’m currently working on university projects
 - 🌱 I’m currently learning python
