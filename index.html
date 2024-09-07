@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3977963599012739"
+     crossorigin="anonymous"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantum Gita Explorer</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Exo+2:wght@300;400;600&display=swap');
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Exo 2', sans-serif;
+            background: #0c0c0c;
+            color: #dcdcdc;
+            overflow: hidden;
+        }
+
+        .oppenheimer-realm {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 50% 50%, rgba(200, 200, 200, 0.05) 0%, transparent 70%),
+                radial-gradient(circle at 50% 50%, rgba(255, 69, 0, 0.05) 0%, transparent 90%);
+            animation: slowPulse 20s infinite alternate;
+        }
+
+        @keyframes slowPulse {
+            0% { transform: scale(1); opacity: 0.6; }
+            100% { transform: scale(1.05); opacity: 1; }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            padding: 2rem;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.5rem;
+            margin-bottom: 2rem;
+            color: #ff4500;
+            text-shadow: 0 0 15px rgba(255, 69, 0, 0.5);
+        }
+
+        #verse-container {
+            background: rgba(12, 12, 12, 0.85);
+            border: 2px solid #dcdcdc;
+            border-radius: 8px;
+            padding: 2rem;
+            max-width: 800px;
+            width: 90%;
+            box-shadow: 0 0 25px rgba(255, 69, 0, 0.3);
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #verse-number {
+            font-weight: bold;
+            color: #ff6347;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            font-family: 'Space Mono', monospace;
+        }
+
+        #verse {
+            font-size: 1.3rem;
+            line-height: 1.7;
+            margin-bottom: 2rem;
+            color: #e6e6e6;
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 2rem;
+        }
+
+        .nav-btn, #random-btn {
+            background: transparent;
+            color: #dcdcdc;
+            border: 2px solid #dcdcdc;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Space Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .nav-btn:hover, #random-btn:hover {
+            background: #ff4500;
+            color: #0c0c0c;
+            box-shadow: 0 0 25px rgba(255, 69, 0, 0.5);
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: #ff6347;
+            border-radius: 50%;
+            pointer-events: none;
+            opacity: 0.8;
+            animation: floatParticle 10s infinite ease-in-out;
+        }
+
+        @keyframes floatParticle {
+            0%, 100% { transform: translate(0, 0); }
+            25% { transform: translate(10px, 10px); }
+            50% { transform: translate(-10px, 20px); }
+            75% { transform: translate(-20px, -10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="oppenheimer-realm"></div>
+    <div class="container">
+        <h1>Quantum Gita Explorer</h1>
+        <div id="verse-container">
+            <div id="verse-number"></div>
+            <div id="verse"></div>
+        </div>
+        <div class="button-container">
+            <button class="nav-btn" id="prev-btn" onclick="navigateVerse(-1)">Previous</button>
+            <button id="random-btn" onclick="getRandomVerse()">quantum leap</button>
+            <button class="nav-btn" id="next-btn" onclick="navigateVerse(1)">Next</button>
+        </div>
+    </div>
+
+    <script>
+        let gitaVerses = {};
+        let currentVerseIndex = 0;
+        let verseKeys = [];
+
+        async function loadGitaVerses() {
+            try {
+                const response = await fetch('gita.json');
+                gitaVerses = await response.json();
+                verseKeys = Object.keys(gitaVerses);
+                getRandomVerse();
+            } catch (error) {
+                console.error('Error loading Gita verses:', error);
+                document.getElementById('verse').textContent = 'Error loading verses. Please try again later.';
+            }
+        }
+
+        function getRandomVerse() {
+            currentVerseIndex = Math.floor(Math.random() * verseKeys.length);
+            displayVerse();
+        }
+
+        function navigateVerse(direction) {
+            currentVerseIndex += direction;
+            if (currentVerseIndex < 0) currentVerseIndex = verseKeys.length - 1;
+            if (currentVerseIndex >= verseKeys.length) currentVerseIndex = 0;
+            displayVerse();
+        }
+
+        function displayVerse() {
+            const verseKey = verseKeys[currentVerseIndex];
+            const verseText = gitaVerses[verseKey];
+            
+            const verseContainer = document.getElementById('verse-container');
+            verseContainer.style.opacity = 0;
+            
+            setTimeout(() => {
+                document.getElementById('verse-number').textContent = `Chapter ${verseKey.split(':')[0]}, Verse ${verseKey.split(':')[1]}`;
+                document.getElementById('verse').textContent = verseText;
+                verseContainer.style.opacity = 1;
+                createParticles();
+            }, 500);
+        }
+
+        function createParticles() {
+            const container = document.querySelector('.container');
+            for (let i = 0; i < 6; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 5}s`;
+                container.appendChild(particle);
+                setTimeout(() => particle.remove(), 10000);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadGitaVerses);
+    </script>
+</body>
+</html>
